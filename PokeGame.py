@@ -1,14 +1,13 @@
-from collections import *
 from pokemon import *
 
 
 class PokeGame:
-    def __init__(self, game_master):
-        self.game_master = game_master
+    def __init__(self):
+        self.game_master = []
         self.setup()
-        # self.draw_pokemon()
 
     def setup(self):
+
         psychic_type = PsychicType("Necrozma", "Nina")
         ghost_type = GhostType("Gastly", "Gage")
         # FairyType class by Allison Tsai
@@ -24,100 +23,69 @@ class PokeGame:
         print(f"Your deck this game has {len(self.game_master)} cards!")
 
     def draw_pokemon(self):
-        if self.game_master:
-            return self.game_master.pop(1)
+        if len(self.game_master) > 0:
+            drawn_pokemon = self.game_master.pop(0)
+            print(f"Your opponent has selected: {drawn_pokemon.name} \n"
+                  f"{drawn_pokemon}")
+            return drawn_pokemon
         else:
             print("Game Over")
+            return None
 
-    def print_menu(self):
-        """ Prints the available Pokemon as a string."""
-        print("Select a Pokemon to play against "
+    def get_choice(self):
+        """ Recieves Pokemon choice and info from user."""
+        global user_pokemon, pokemon_hp
+        print("Select a Pokemon to play with "
               "(or 9 to end)".center(55))
-        poke_dict = OrderedDict()  # OrderedDict to maintain list order
-        counter = 1
-        for item in self.game_master:
-            poke_dict[item.name] = counter
-            counter += 1
-        print("These are the Pokemon you can choose from: ".center(55))
-        for k, v in poke_dict.items():
-            print(v, k)
+        print("1: Psychic Type")
+        print("2: Fairy Type")
         while True:
-            user_choice = int(input("Enter your choice: "))
-            if user_choice != 9:
-                user_choice = user_choice - 1
-                print(f"Your pokemon: {self.game_master[user_choice]}")
-                return self.game_master[user_choice]
-            else:
-                break
+            try:
+                user_choice = int(input("Enter your choice: "))
+                if user_choice == 9:
+                    return None
+                elif user_choice == 1:
+                    pokemon_name = input("Enter a name for your "
+                                         "Pokemon: ")
+                    pokemon_trainer = input("Enter a trainer for your "
+                                            "Pokemon: ")
+                    user_pokemon = PsychicType(pokemon_name,
+                                               pokemon_trainer)
+                elif user_choice == 2:
+                    pokemon_name = input("Enter a name for your "
+                                         "Pokemon: ")
+                    pokemon_trainer = input("Enter a trainer for your "
+                                            "Pokemon: ")
+                    while True:
+                        try:
+                            pokemon_hp = int(input("Enter hp for your "
+                                                   "Pokemon: "))
+                            break
+                        except (TypeError, IndexError,
+                                UnboundLocalError):
+                            print("Please enter an integer.")
+                            continue
+                    user_pokemon = FairyType(pokemon_name,
+                                             pokemon_trainer,
+                                             pokemon_hp)
+                else:
+                    print("Please enter a valid choice.")
+            except ValueError:
+                print("Please enter an integer")
+                continue
+            return user_pokemon
+        return user_pokemon
 
 
 def main():
-    deck1 = []
-    pokegame1 = PokeGame(deck1)
+    pokegame1 = PokeGame()
     opponent_pokemon = pokegame1.draw_pokemon()
-    try:
-        print(f"Your opponent has selected: {opponent_pokemon.name} \n"
-              f"{opponent_pokemon}")
-        user_pokemon = pokegame1.print_menu()
+    while opponent_pokemon:
+        user_pokemon = pokegame1.get_choice()
         user_pokemon.attack(opponent_pokemon)
-    except AttributeError:
-        print("Thanks for playing!")
+        opponent_pokemon = pokegame1.draw_pokemon()
 
 
 if __name__ == "__main__":
     main()
 
-# menu_options = {
-#     1: "",
-#     2: "",
-#     3: "",
-#     4: "",
-#     5: "",
-#     6: "",
-#     7: "",
-#     8: "",
-#     9: "End",
-# }
-
-# def main():
-#     deck1 = []
-#     game1 = PokeGame(deck1)
-#     # for item in game1.game_master:
-#     #     print(item.name)
-#     game1.menu_options = {range(len(game1.game_master)): item.name
-#     for item in game1.game_master}
-#     print(game1.menu_options)
-#     while True:
-#         print()
-#         game1.print_menu()
-#         try:
-#             option_choice = int(input("Enter your choice: "))
-#         except ValueError:
-#             print("Enter an integer please.")
-#             continue
-#        if option_choice in menu_options:
-#             print(f"You chose {menu_options[option_choice]}\n")
-#             if option_choice == 1:
-#                 print(game1.game_master[0])
-#             if option_choice == 2:
-#                 print(game1.game_master[1])
-#             if option_choice == 3:
-#                 print(game1.game_master[2])
-#             if option_choice == 4:
-#                 print(game1.game_master[3])
-#             if option_choice == 5:
-#                 print(game1.game_master[4])
-#             if option_choice == 6:
-#                 print(game1.game_master[5])
-#             if option_choice == 7:
-#                 print(game1.game_master[6])
-#             if option_choice == 8:
-#                 pass
-#             if option_choice == 9:
-#                 print(f"Thanks for playing PokeGame! "
-#                       f"We hope you had fun!")
-#         else:
-#             print("Enter an integer from the menu please.")
-#
-#     # game1.setup()
-#     # drawnPokemon = game1.draw_pokemon()
